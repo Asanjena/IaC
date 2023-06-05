@@ -1,10 +1,18 @@
 
 IAC helps us to codify any mannual process. 
 
+Infrastructure as Code (IaC) is a concept that involves managing and provisioning infrastructure resources, such as servers, networks, and storage, through machine-readable configuration files or scripts. It treats infrastructure configuration and deployment as code, allowing for automated and version-controlled management. With IaC, infrastructure can be defined, provisioned, and managed using the same principles and tools as software development, enabling repeatability, consistency, and scalability. This approach eliminates manual setup and configuration, reduces human errors, and facilitates collaboration among teams. IaC enables faster and more reliable infrastructure deployment, ensures system reproducibility, and promotes agility in modern software development practices.
+
+![Alt text](IAC-diagram.jpg)
+
 
 ## Ansible 
 
-Ansible is a configuration manager 
+Ansible is an open-source automation tool that simplifies the management and provisioning of computer systems. It allows for the configuration, deployment, and orchestration of infrastructure, making it easier to automate repetitive tasks, streamline workflows, and ensure consistent system states across multiple servers.
+
+![Alt text](Ansible.png)
+
+
 
 It is a extremely powerful, simple, and agentless automation tool
 
