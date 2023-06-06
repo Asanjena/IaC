@@ -82,8 +82,10 @@ exit
 ```
 vagrant ssh 192.168.33.11
 ```
-#  enter yes again when prompted
-# for password - vagrant
+
+enter yes again when prompted
+
+for password - vagrant
 
 exit
 
