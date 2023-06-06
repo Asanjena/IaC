@@ -1,18 +1,18 @@
 
 IAC helps us to codify any mannual process. 
 
-Infrastructure as Code (IaC) is a concept that involves managing and provisioning infrastructure resources, such as servers, networks, and storage, through machine-readable configuration files or scripts. It treats infrastructure configuration and deployment as code, allowing for automated and version-controlled management. With IaC, infrastructure can be defined, provisioned, and managed using the same principles and tools as software development, enabling repeatability, consistency, and scalability. This approach eliminates manual setup and configuration, reduces human errors, and facilitates collaboration among teams. IaC enables faster and more reliable infrastructure deployment, ensures system reproducibility, and promotes agility in modern software development practices.
-
+Infrastructure as Code (IaC) is a concept that involves managing and provisioning infrastructure resources, such as servers, networks, and storage, through machine-readable configuration files or scripts. It treats infrastructure configuration and deployment as code, allowing for automated and version-controlled management.  This approach eliminates manual setup and configuration, reduces human errors, and facilitates collaboration among teams. IaC allows for faster and more reliable infrastructure deployment'
 ![Alt text](IAC-diagram.jpg)
 
 
 ## Ansible 
 
-Ansible is an open-source automation tool that simplifies the management and provisioning of computer systems. It allows for the configuration, deployment, and orchestration of infrastructure, making it easier to automate repetitive tasks, streamline workflows, and ensure consistent system states across multiple servers.
+Ansible is an open-source automation tool that simplifies the management and provisioning of computer systems. It allows for the configuration, deployment, and orchestration of infrastructure, making it easier to automate repetitive tasks, streamline workflows, and allows for consistent system states across multiple servers.
 
 ![Alt text](Ansible.png)
 
 
+## Why Ansible?
 
 It is a extremely powerful, simple, and agentless automation tool
 
@@ -23,13 +23,20 @@ It is a extremely powerful, simple, and agentless automation tool
 **Agentless** - It is agentless, meaning that only the controller needs to have ansible installed. This is beneficial ass if you have lots of servers, e.g., 200, all of these do not need to have ansible installed, helpting to save lots of time. 
 
 
-## Setting up nodes 
+## Setting up and upgrading VMs
 
 1. Download the vagrantfile provided into the same folder as your README.md for IaC
 
-2. Run Vagrant up (if prompted to create a vagrant file, copy contents of downloaded vagrant file into the new one you create)
+ In this, three virtual machines are configured. It has provisions for a controller, web application and database with the following network configurations:
 
-3. Run 'vagrant up'
+controller: 192.168.33.12
+
+web: 192.168.33.10
+
+db: 192.168.33.11
+
+
+2. Run 'vagrant up'
 
 Make sure you have Virtual Box open. As 'vagrant up' is happening, you should start seeing the 3 vms (controller, web, and db) come up and eventually say 'running'.
 
@@ -50,13 +57,39 @@ sudo apt-get upgrade -y
 
 1. First we need to ssh into the controller:
 ```
-ssh vagrant@ 192.168.33.11
+Vagrabt ssh controller
+ssh vagrant@ 192.168.33.12
 ```
 
-2. we also need to install common packages, add the Ansible repo, and install ansible:
+2. Then Set up connections to web and db VMs
+ - ssh into web VM from controller VM
 
 ```
+ssh vagrant@192.168.33.10
+```
+- confirm that you are adding host for first time
+(yes)
 
+ - enter password as vagrant (this will look invisable)
+password:vagrant
+
+- Exit controller
+exit
+
+
+3. ssh into the db from the controller
+
+```
+vagrant ssh 192.168.33.11
+```
+#  enter yes again when prompted
+# for password - vagrant
+
+exit
+
+4. we also need to install common packages, add the Ansible repo, and install ansible:
+
+```
 sudo apt install software-properties-common
 
 sudo apt-add-repository ppa:ansible/ansible
@@ -68,30 +101,20 @@ sudo apt install ansible -y
 
 To check if ansible 2.9.27 is installed do 'sudo ansible --version'
 
-
-**note** you only need to install ansible on the controller. 
-
-3. You can then configure it so that it can use ssh to communicate to the other 2 VMs (web and db)
-
-```
-ssh vagarant@<ip-adress>
-```
-
-4. When you log into one of these vms, it will ask you to add it to the known hosts (so say yes to this and input the password 'vagrant')
-
-5. Next we need to go to the right place:
-
 ```
 cd /etc/ansible
+sudo apt install tree
+tree
 ```
 
-6. We then need to add the key for the web and db vm:
+
+5. You can then change the configs
 
 ```
 sudo nano hosts
 ```
 
-7. In the terminal that appears, add the two lines:
+6. In the terminal that appears, add the two lines (so ansible knows node agents addresses and login details):
 
 ```
 [web]
