@@ -58,7 +58,7 @@ sudo apt-get upgrade -y
 1. First we need to ssh into the controller:
 ```
 Vagrabt ssh controller
-ssh vagrant@ 192.168.33.12
+ssh vagrant@192.168.33.12
 ```
 
 2. Then Set up connections to web and db VMs
@@ -80,7 +80,7 @@ exit
 3. ssh into the db from the controller
 
 ```
-vagrant ssh 192.168.33.11
+ssh vagrant@192.168.33.11
 ```
 
 enter yes again when prompted
