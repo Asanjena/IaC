@@ -1,1 +1,1 @@
-{"virtualbox":{"/vagrant":{"guestpath":"/vagrant","hostpath":"C:/Users/alema/Documents/TECH230 Visualisation/IaC","disabled":false,"__vagrantfile":true}}}
+{"virtualbox":{"/home/vagrant/app":{"guestpath":"/home/vagrant/app","hostpath":"C:/Users/alema/Documents/TECH230 Visualisation/IaC/app","disabled":false,"__vagrantfile":true},"/vagrant":{"guestpath":"/vagrant","hostpath":"C:/Users/alema/Documents/TECH230 Visualisation/IaC","disabled":false,"__vagrantfile":true}}}

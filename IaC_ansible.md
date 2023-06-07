@@ -139,6 +139,18 @@ sudo ansible all -m ping
 ```
 ![Alt text](Pings.PNG)
 
+To ping app:
+
+```
+sudo ansible web -m ping
+```
+
+To ping db:
+
+```
+sudo ansible db -m ping
+```
+
 
 ## Blockers
 
@@ -150,8 +162,151 @@ sudo nano ansible.config
 
 From here, find the default section, and remove the '#' from the 'host_key_checking=false' line.
 
+
 You can also go to the SSH conection section and add 'host_key_checking=false' 
 
 You can then run the 'sudo ansible all -m ping' command again to test if it was successful. 
 
 
+## Ansible Playbooks 
+
+These use YAML
+
+1. Creating a playbook for installing nginx in web server:
+
+```
+sudo nano config_nginx_web.yml
+```
+
+Inside this, add the following:
+
+```
+# add --- to start YAML file
+---
+# add name of the host
+- hosts: web
+# gather additional facts about the steps (optional)
+  gather_facts: yes
+# add admin access to this file
+  become: true
+# add instructions (i.e. TASKS) (to install nginx):
+# install nginx
+  tasks:
+  - name: Installing Nginx
+    apt: pkg=nginx state=present # starts and ensures present,state=absent stops/removes
+# enable nginx
+```
+
+2. Run the playbook:
+
+```
+sudo ansible-playbook config_nginx_web.yml
+```
+
+![Alt text](nginx.PNG)
+
+To check status
+
+```
+sudo ansible web -a "sudo systemctl status nginx"
+```
+
+You should see the output say 'active: active (running)'
+
+
+## Copying over the app folder from GitHub to ansible controller
+
+```
+sudo apt-get update
+sudo apt-get install git
+sudo git clone https://github.com/alema/app.git
+
+```
+## Copying the app folder to web 
+
+```
+sudo ansible web -m copy -a "src=/etc/ansible/app dest=/home/vagrant"
+sudo ansible web -a "ls"
+```
+
+
+
+## Installing Node, pm2, npm and starting app with reverse proxy setup
+
+1. Create a playbook:
+
+```
+sudo nano start-app.yml
+```
+
+Add the following:
+---
+- name: Setup Node.js environment and start app on web VM
+  hosts: web
+  become: yes
+
+  tasks:
+    - name: Gathering Facts
+      setup:
+
+    - name: Update the system
+      apt:
+        update_cache: yes
+
+    - name: Install curl
+      apt:
+        name: curl
+        state: present
+
+    - name: Add Node.js 14.x repository
+      shell: curl -sL https://deb.nodesource.com/setup_14.x | bash -
+      args:
+        warn: false
+
+    - name: Install Node.js
+      apt:
+        name: nodejs
+        state: present
+
+
+
+    - name: Install npm dependencies
+      command: npm install
+      args:
+        chdir: /home/vagrant/app
+
+    - name: Set up Nginx reverse proxy
+      replace:
+        path: /etc/nginx/sites-available/default
+        regexp: 'try_files \$uri \$uri/ =404;'
+        replace: 'proxy_pass http://localhost:3000/;'
+
+    - name: Reload Nginx to apply changes
+      systemd:
+        name: nginx
+        state: reloaded
+
+    -
+
+```
+
+2. Start the playbook:
+
+```
+sudo ansible-playbook node_pm2_appstart.ym
+```
+![Alt text](Capture1.PNG)
+
+
+3. 
+
+```
+ssh vagrant@192.168.33.10
+(you will then be prompted to enter password)
+cd into app
+npm start
+```
+
+You should then be able to acces the app page:
+
+![Alt text](Capture.PNG)
