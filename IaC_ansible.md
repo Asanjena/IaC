@@ -7,7 +7,9 @@ Infrastructure as Code (IaC) is a concept that involves managing and provisionin
 
 ## Ansible 
 
-Ansible is an open-source automation tool that simplifies the management and provisioning of computer systems. It allows for the configuration, deployment, and orchestration of infrastructure, making it easier to automate repetitive tasks, streamline workflows, and allows for consistent system states across multiple servers.
+Ansible is an open-source automation tool that lets you manage IT infrastructure.
+
+It allows for the configuration, deployment, and orchestration of infrastructure, making it easier to automate repetitive tasks, streamline workflows, and allows for consistent system states across multiple servers.
 
 ![Alt text](Ansible.png)
 
