@@ -233,7 +233,7 @@ sudo ansible web -a "ls"
 
 
 
-## Installing Node, pm2, npm and starting app with reverse proxy setup
+## Installing Node, npm and starting app with reverse proxy setup
 
 1. Create a playbook:
 
@@ -242,6 +242,7 @@ sudo nano start-app.yml
 ```
 
 Add the following:
+```
 ---
 - name: Setup Node.js environment and start app on web VM
   hosts: web
@@ -295,7 +296,7 @@ Add the following:
 2. Start the playbook:
 
 ```
-sudo ansible-playbook node_pm2_appstart.ym
+sudo ansible-playbook start-app.yml
 ```
 ![Alt text](Capture1.PNG)
 
