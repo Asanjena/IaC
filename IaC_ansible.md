@@ -1,8 +1,15 @@
+##**Infrastructure as Code**
+
+![Alt text](images/IAC-diagram.jpg)
 
 IAC helps us to codify any mannual process. 
 
-Infrastructure as Code (IaC) is a concept that involves managing and provisioning infrastructure resources, such as servers, networks, and storage, through machine-readable configuration files or scripts. It treats infrastructure configuration and deployment as code, allowing for automated and version-controlled management.  This approach eliminates manual setup and configuration, reduces human errors, and facilitates collaboration among teams. IaC allows for faster and more reliable infrastructure deployment'
-![Alt text](IAC-diagram.jpg)
+It is a concept that involves managing and provisioning infrastructure resources, such as servers, networks, and storage, through machine-readable configuration files or scripts. 
+
+It treats infrastructure configuration and deployment as code, allowing for automated and version-controlled management.  This approach eliminates manual setup and configuration, reduces human errors, and facilitates collaboration among teams. 
+
+ = IaC allows for faster and more reliable infrastructure deployment.
+
 
 
 ## Ansible 
@@ -11,7 +18,7 @@ Ansible is an open-source automation tool that lets you manage IT infrastructure
 
 It allows for the configuration, deployment, and orchestration of infrastructure, making it easier to automate repetitive tasks, streamline workflows, and allows for consistent system states across multiple servers.
 
-![Alt text](Ansible.png)
+![Alt text](images/Ansible.png)
 
 
 ## Why Ansible?
@@ -130,7 +137,7 @@ sudo nano hosts
 192.168.33.11 ansible_connection=ssh ansible_ssh_user=vagrant ansible_ssh_pass=vagrant
 ```
 
-![Alt text](keys.PNG)
+![Alt text](images/keys.PNG)
 
 8. Save and exit this.
 
@@ -139,7 +146,7 @@ sudo nano hosts
 ```
 sudo ansible all -m ping
 ```
-![Alt text](Pings.PNG)
+![Alt text](images/Pings.PNG)
 
 To ping app:
 
@@ -205,7 +212,7 @@ Inside this, add the following:
 sudo ansible-playbook config_nginx_web.yml
 ```
 
-![Alt text](nginx.PNG)
+![Alt text](images/nginx.PNG)
 
 To check status
 
@@ -298,7 +305,7 @@ Add the following:
 ```
 sudo ansible-playbook start-app.yml
 ```
-![Alt text](Capture1.PNG)
+![Alt text](images/Capture1.PNG)
 
 
 3. 
@@ -312,4 +319,167 @@ npm start
 
 You should then be able to acces the app page:
 
-![Alt text](Capture.PNG)
+![Alt text](images/Capture.PNG)
+
+
+## setting up mongodb
+
+1. SSH controller
+
+
+2. sudo ansible all -m ping
+
+
+3. cd /etc/ansible                                                         
+
+
+4. create a yml file:
+
+```
+sudo nano setup-mongo.yml
+```
+
+5. Enter the following in the yml file:
+
+```
+# Installing required version of mongo db
+# hosts entries are already done  - ssh / password authentication is in place
+
+---
+# hosts name
+
+- hosts: db
+
+# gather facts (logs)
+
+  gather_facts: yes
+
+# admin access
+
+  become: true
+
+# add instructions
+  tasks:
+  - name: setting up mongo db
+    apt: pkg=mongodb state=present
+
+# ensure the db is running - status actively running
+ 
+```
+
+![Alt text](images/mongo1.PNG)
+
+6. Run the playbook:
+
+```
+sudo ansible-playbook setup-mongo.yml
+```
+
+7. check the status:
+
+```
+sudo ansible db -a "sudo systemctl status mongod"
+```
+
+**note** - If the playbook worked successfuly, you should see the active: active (running status)
+
+
+
+8. SSH into db:
+
+ssh vagrant@192.168.33.11
+(add same password as usual when prompted)
+
+
+9. Now we want to do the configuration
+
+
+```
+sudo nano /etc/mongodb.conf
+```
+
+5. Make sure the bind_ip is set to 0.0.0.0
+
+![Alt text](images/bindip.PNG)
+
+
+6. We need to make sure the new configuration kicks in:
+
+```
+sudo systemctl restart mongodb
+sudo systemctl enable mongodb
+```
+
+7. Check that the status is active and running:
+
+```
+sudo systemctl status mongodb
+```
+
+8. Exit and return to controller machine (vagrant@controller:/etc/ansible$)
+
+
+9. SSH into web
+
+```
+ssh vagrant@192.168.33.10
+```
+
+10. Create a persistant env variable called DB_HOST=db-ip:27017/posts
+
+```
+~/.bashrc
+add (export DB_HOST=mongodb://192.168.33.11:27017/posts) to end of file
+source ~/.bashrc
+
+```
+You can use the 'printenv' command to check that it has worked
+
+11. Navigate to app folder (cd app)
+
+12. Make sure that the database has been seeded and cleared:
+
+```
+node seeds/seed.js 
+```
+
+13. Run 'Npm start' 
+ 
+ You should be able to see all the 3 pages for the app
+
+
+## Automating in a playbook:
+```
+  tasks:
+  - name: Setting up mongo db
+    apt: pkg=mongodb state=present
+
+  - name: Change bind ip
+    replace:
+      path: /etc/mongodb.conf
+      regexp: 'bind_ip = 127.0.0.1'
+      replace: 'bind_ip = 0.0.0.0'
+    become: true
+
+  - name: Uncomment port
+    replace:
+      path: /etc/mongodb.conf
+      regexp: '#port = 27017'
+      replace: 'port = 27017'
+    become: true
+
+  - name: Restart mongodb
+    service:
+      name: mongodb
+      state: restarted
+    become: true
+
+  - name: Enable mongodb
+    service:
+      name: mongodb
+      state: started
+      enabled: yes
+    become: true
+
+    ```
+
